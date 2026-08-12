@@ -1,0 +1,12 @@
+services:
+  heimdall-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: heimdall-dev
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    stdin_open: true
+    tty: true
+    command: bash

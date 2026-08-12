@@ -1,0 +1,22 @@
+# Runtime template for applications that consume Heimdall.
+# Copy this file into your application repository and adjust APP_CMD if needed.
+
+FROM golang:1.22-bookworm AS build
+
+ARG APP_CMD=./cmd/server
+
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /out/app ${APP_CMD}
+
+FROM gcr.io/distroless/static-debian12:nonroot
+
+WORKDIR /
+COPY --from=build /out/app /app
+
+EXPOSE 8080
+ENTRYPOINT ["/app"]
